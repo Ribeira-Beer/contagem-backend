@@ -17,7 +17,7 @@ export class AreaService {
     }
 
     if (!revenda.ativo) {
-      throw new AppError('A revenda está inativa', 409);
+      throw new AppError('A revenda está inativa', 409); 
     }
 
     const areaExistente = await prisma.area.findUnique({
