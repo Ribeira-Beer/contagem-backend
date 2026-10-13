@@ -6,6 +6,19 @@ datasource db {
   provider = "mysql"
 }
 
+model Usuario {
+  id    Int     @id @default(autoincrement())
+  email String? @unique @db.VarChar(150)
+  cpf   String? @unique @db.VarChar(14)
+  senha String  @db.VarChar(255)
+  tipo  String  @db.VarChar(20)
+  ativo Boolean @default(true)
+
+  conferente Conferente?
+
+  @@map("usuarios")
+}
+
 model Revenda {
   id          Int            @id @default(autoincrement())
   codOperacao Int            @unique @map("cod_operacao")
@@ -62,11 +75,14 @@ model Produto {
 }
 
 model Conferente {
-  id        Int        @id @default(autoincrement())
-  nome      String     @db.VarChar(150)
-  cpf       String     @unique @db.VarChar(14)
-  ativo     Boolean    @default(true)
-  idRevenda Int        @map("id_revenda")
+  id        Int     @id @default(autoincrement())
+  nome      String  @db.VarChar(150)
+  cpf       String  @unique @db.VarChar(14)
+  ativo     Boolean @default(true)
+  idRevenda Int     @map("id_revenda")
+  idUsuario Int?    @unique @map("id_usuario")
+
+  usuario   Usuario?   @relation(fields: [idUsuario], references: [id], map: "fk_conferentes_usuario")
   revenda   Revenda    @relation(fields: [idRevenda], references: [id], map: "fk_conferentes_revenda")
   contagens Contagem[]
 

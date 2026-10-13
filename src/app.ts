@@ -4,15 +4,25 @@ import { conferenteRoutes } from './routes/conferente.routes';
 import { areaRoutes } from './routes/area.routes';
 import { produtoRoutes } from './routes/produto.routes';
 import { contagemRoutes } from './routes/contagem.routes';
+import { AuthController } from './controllers/auth.controller';
+import { authMiddleware } from './middlewares/auth.middleware';
+import { usuarioRoutes } from './routes/usuario.routes';
 
 const app = express();
 
 app.use(express.json());
 
-app.use('/revendas', revendaRoutes);
-app.use('/conferentes', conferenteRoutes);
-app.use('/areas', areaRoutes);
-app.use('/produtos', produtoRoutes);
-app.use('/contagens', contagemRoutes)
+const authController = new AuthController();
+app.post('/login', authController.login.bind(authController));
+
+app.use('/usuarios', usuarioRoutes);
+app.post('/login', authController.login.bind(authController));
+
+app.use('/revendas', authMiddleware, revendaRoutes);
+app.use('/conferentes', authMiddleware, conferenteRoutes);
+app.use('/areas', authMiddleware, areaRoutes);
+app.use('/produtos', authMiddleware, produtoRoutes);
+app.use('/contagens', authMiddleware, contagemRoutes)
+
 
 export { app };
