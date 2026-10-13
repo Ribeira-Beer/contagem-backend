@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Revenda {
+  id          Int            @id @default(autoincrement())
+  codOperacao Int            @unique @map("cod_operacao")
+  nome        String         @db.VarChar(150)
+  cnpj        String         @unique @db.VarChar(18)
+  cep         String         @db.VarChar(9)
+  estado      String         @db.VarChar(2)
+  cidade      String         @db.VarChar(100)
+  bairro      String         @db.VarChar(100)
+  logradouro  String         @db.VarChar(150)
+  numero      Int
+  ativo       Boolean        @default(true)
+  areas       Area[]
+  conferentes Conferente[]
+  contagens   Contagem[]
+  itens       ItemContagem[]
+  produtos    Produto[]
+
+  @@map("revendas")
+}
+
+model Area {
+  id        Int        @id @default(autoincrement())
+  nome      String     @db.VarChar(100)
+  idRevenda Int        @map("id_revenda")
+  ativo     Boolean    @default(true)
+  revenda   Revenda    @relation(fields: [idRevenda], references: [id], map: "fk_areas_revenda")
+  contagens Contagem[]
+
+  @@unique([nome, idRevenda])
+  @@index([idRevenda], map: "fk_areas_revenda")
+  @@map("areas")
+}
+
+model Produto {
+  codProduto         Int            @id @map("cod_produto")
+  nomeCompleto       String         @map("nome_completo") @db.VarChar(255)
+  nomeAbreviado      String         @map("nome_abreviado") @db.VarChar(100)
+  cesta              String         @db.VarChar(60)
+  familia            String         @db.VarChar(60)
+  unidadesEmbalagem  Int            @map("unidades_embalagem")
+  embalagensLastro   Int            @default(0) @map("embalagens_lastro")
+  embalagensPallet47 Int            @default(0) @map("embalagens_pallet_47")
+  embalagensPallet60 Int            @default(0) @map("embalagens_pallet_60")
+  hl                 Decimal        @db.Decimal(10, 4)
+  tipoEmbalagem      String         @db.VarChar(60)
+  ativo              Boolean        @default(true)
+  idRevenda          Int?           @map("id_revenda")
+  itensContagem      ItemContagem[]
+  revenda            Revenda?       @relation(fields: [idRevenda], references: [id])
+
+  @@index([idRevenda], map: "produtos_id_revenda_fkey")
+  @@map("produtos")
+}
+
+model Conferente {
+  id        Int        @id @default(autoincrement())
+  nome      String     @db.VarChar(150)
+  cpf       String     @unique @db.VarChar(14)
+  ativo     Boolean    @default(true)
+  idRevenda Int        @map("id_revenda")
+  revenda   Revenda    @relation(fields: [idRevenda], references: [id], map: "fk_conferentes_revenda")
+  contagens Contagem[]
+
+  @@index([idRevenda], map: "fk_conferentes_revenda")
+  @@map("conferentes")
+}
+
+model Contagem {
+  id              Int            @id @default(autoincrement())
+  idConferente    Int            @map("id_conferente")
+  status          String         @default("EM_ANDAMENTO") @db.VarChar(20)
+  idArea          Int            @map("id_area")
+  idRevenda       Int            @map("id_revenda")
+  dataAbertura    DateTime       @default(now()) @map("data_abertura")
+  dataFinalizacao DateTime?      @map("data_finalizacao")
+  area            Area           @relation(fields: [idArea], references: [id], map: "fk_contagens_area")
+  conferente      Conferente     @relation(fields: [idConferente], references: [id], map: "fk_contagens_conferente")
+  revenda         Revenda        @relation(fields: [idRevenda], references: [id], map: "fk_contagens_revenda")
+  itens           ItemContagem[]
+
+  @@index([idArea], map: "fk_contagens_area")
+  @@index([idConferente], map: "fk_contagens_conferente")
+  @@index([idRevenda], map: "fk_contagens_revenda")
+  @@map("contagens")
+}
+
+model ItemContagem {
+  id           Int      @id @default(autoincrement())
+  idContagem   Int      @map("id_contagem")
+  codProduto   Int      @map("cod_produto")
+  pallets      Int      @default(0)
+  lastros      Int      @default(0)
+  unidades     Int      @default(0)
+  avulsas      Int      @default(0)
+  idRevenda    Int      @map("id_revenda")
+  dataRegistro DateTime @default(now()) @map("data_registro")
+  contagem     Contagem @relation(fields: [idContagem], references: [id], onDelete: Cascade, map: "fk_itens_contagem")
+  produto      Produto  @relation(fields: [codProduto], references: [codProduto], map: "fk_itens_produto")
+  revenda      Revenda  @relation(fields: [idRevenda], references: [id], map: "fk_itens_revenda")
+
+  @@index([idContagem], map: "fk_itens_contagem")
+  @@index([codProduto], map: "fk_itens_produto")
+  @@index([idRevenda], map: "fk_itens_revenda")
+  @@map("itens_contagem")
+}
