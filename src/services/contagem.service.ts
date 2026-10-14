@@ -11,6 +11,7 @@ export class ContagemService {
         idArea: data.idArea,
         status: 'EM_ANDAMENTO',
       },
+      include: { itens: { include: { produto: true }, orderBy: { id: 'asc' } } },
     });
 
     if (contagemAberta) {
@@ -24,6 +25,7 @@ export class ContagemService {
         idRevenda: data.idRevenda,
         status: 'EM_ANDAMENTO',
       },
+      include: { itens: { include: { produto: true }, orderBy: { id: 'asc' } } },
     });
 
     return novaContagem;
