@@ -3,17 +3,16 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 model Usuario {
-  id    Int     @id @default(autoincrement())
-  email String? @unique @db.VarChar(150)
-  cpf   String? @unique @db.VarChar(14)
-  senha String  @db.VarChar(255)
-  tipo  String  @db.VarChar(20)
-  ativo Boolean @default(true)
-
+  id         Int         @id @default(autoincrement())
+  email      String?     @unique @db.VarChar(150)
+  cpf        String?     @unique @db.VarChar(14)
+  senha      String      @db.VarChar(255)
+  tipo       String      @db.VarChar(20)
+  ativo      Boolean     @default(true)
   conferente Conferente?
 
   @@map("usuarios")
@@ -49,7 +48,7 @@ model Area {
   contagens Contagem[]
 
   @@unique([nome, idRevenda])
-  @@index([idRevenda], map: "fk_areas_revenda")
+  @@index([idRevenda])
   @@map("areas")
 }
 
@@ -68,25 +67,24 @@ model Produto {
   ativo              Boolean        @default(true)
   idRevenda          Int?           @map("id_revenda")
   itensContagem      ItemContagem[]
-  revenda            Revenda?       @relation(fields: [idRevenda], references: [id])
+  revenda            Revenda?       @relation(fields: [idRevenda], references: [id], map: "fk_produtos_revenda")
 
-  @@index([idRevenda], map: "produtos_id_revenda_fkey")
+  @@index([idRevenda])
   @@map("produtos")
 }
 
 model Conferente {
-  id        Int     @id @default(autoincrement())
-  nome      String  @db.VarChar(150)
-  cpf       String  @unique @db.VarChar(14)
-  ativo     Boolean @default(true)
-  idRevenda Int     @map("id_revenda")
-  idUsuario Int?    @unique @map("id_usuario")
-
+  id        Int        @id @default(autoincrement())
+  nome      String     @db.VarChar(150)
+  cpf       String     @unique @db.VarChar(14)
+  ativo     Boolean    @default(true)
+  idRevenda Int        @map("id_revenda")
+  idUsuario Int?       @unique @map("id_usuario")
   usuario   Usuario?   @relation(fields: [idUsuario], references: [id], map: "fk_conferentes_usuario")
   revenda   Revenda    @relation(fields: [idRevenda], references: [id], map: "fk_conferentes_revenda")
   contagens Contagem[]
 
-  @@index([idRevenda], map: "fk_conferentes_revenda")
+  @@index([idRevenda])
   @@map("conferentes")
 }
 
@@ -103,9 +101,9 @@ model Contagem {
   revenda         Revenda        @relation(fields: [idRevenda], references: [id], map: "fk_contagens_revenda")
   itens           ItemContagem[]
 
-  @@index([idArea], map: "fk_contagens_area")
-  @@index([idConferente], map: "fk_contagens_conferente")
-  @@index([idRevenda], map: "fk_contagens_revenda")
+  @@index([idArea])
+  @@index([idConferente])
+  @@index([idRevenda])
   @@map("contagens")
 }
 
@@ -123,8 +121,8 @@ model ItemContagem {
   produto      Produto  @relation(fields: [codProduto], references: [codProduto], map: "fk_itens_produto")
   revenda      Revenda  @relation(fields: [idRevenda], references: [id], map: "fk_itens_revenda")
 
-  @@index([idContagem], map: "fk_itens_contagem")
-  @@index([codProduto], map: "fk_itens_produto")
-  @@index([idRevenda], map: "fk_itens_revenda")
+  @@index([idContagem])
+  @@index([codProduto])
+  @@index([idRevenda])
   @@map("itens_contagem")
 }

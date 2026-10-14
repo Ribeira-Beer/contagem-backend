@@ -16,7 +16,6 @@ const authController = new AuthController();
 app.post('/login', authController.login.bind(authController));
 
 app.use('/usuarios', usuarioRoutes);
-app.post('/login', authController.login.bind(authController));
 
 app.use('/revendas', authMiddleware, revendaRoutes);
 app.use('/conferentes', authMiddleware, conferenteRoutes);
