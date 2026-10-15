@@ -14,7 +14,7 @@ export class AuthService {
         ]
       },
       include: {
-        conferente: true 
+        conferente: true
       }
     });
 
@@ -30,13 +30,15 @@ export class AuthService {
     if (!senhaCorreta) {
       throw new AppError('Usuário ou senha incorretos.', 401);
     }
+    
+    const idRevendaUsuario = usuario.idRevenda || usuario.conferente?.idRevenda;
 
     // Gera o token
     const token = jwt.sign(
-      { 
-        idUsuario: usuario.id, 
+      {
+        idUsuario: usuario.id,
         tipo: usuario.tipo,
-        idRevenda: usuario.conferente?.idRevenda
+        idRevenda: idRevendaUsuario
       },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '1d' }
@@ -47,6 +49,7 @@ export class AuthService {
       usuario: {
         id: usuario.id,
         tipo: usuario.tipo,
+        idRevenda: idRevendaUsuario,
         nome: usuario.conferente?.nome || 'Administrador'
       }
     };

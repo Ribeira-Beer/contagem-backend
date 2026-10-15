@@ -3,7 +3,7 @@ import { AppError } from '../utils/AppError';
 import bcrypt from 'bcrypt';
 
 export class UsuarioService {
-  async criar(data: { email?: string; cpf?: string; senha: string; tipo: string; idConferente?: number }) {
+  async criar(data: { email?: string; cpf?: string; senha: string; tipo: string; idConferente?: number; idRevenda?: number }) {
     if (!data.email && !data.cpf) throw new AppError('Informe e-mail ou CPF.');
 
     const senhaHash = await bcrypt.hash(data.senha, 10);
@@ -14,9 +14,10 @@ export class UsuarioService {
         cpf: data.cpf,
         senha: senhaHash,
         tipo: data.tipo,
+        idRevenda: data.idRevenda,
         conferente: data.idConferente ? { connect: { id: data.idConferente } } : undefined
       },
-      select: { id: true, email: true, cpf: true, tipo: true }
+      select: { id: true, email: true, cpf: true, tipo: true, idRevenda: true }
     });
   }
 }

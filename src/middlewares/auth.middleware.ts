@@ -12,12 +12,22 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
   try {
     const decoded = jwt.verify(token as string, process.env.JWT_SECRET || 'secret');
-    
+
     (req as any).usuario = decoded;
 
     next();
-    
+
   } catch (err) {
     return res.status(401).json({ error: 'Token inválido ou expirado.' });
   }
+}
+
+export function adminMiddleware(req: Request, res: Response, next: NextFunction) {
+  const usuario = (req as any).usuario;
+
+  if (!usuario || usuario.tipo !== 'ADMIN') {
+    return res.status(403).json({ error: 'Acesso negado. Apenas administradores podem realizar esta operação.' });
+  }
+
+  next();
 }

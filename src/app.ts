@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { revendaRoutes } from './routes/revenda.routes';
 import { conferenteRoutes } from './routes/conferente.routes';
 import { areaRoutes } from './routes/area.routes';
@@ -10,18 +11,17 @@ import { usuarioRoutes } from './routes/usuario.routes';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const authController = new AuthController();
 app.post('/login', authController.login.bind(authController));
 
 app.use('/usuarios', usuarioRoutes);
-
 app.use('/revendas', authMiddleware, revendaRoutes);
 app.use('/conferentes', authMiddleware, conferenteRoutes);
 app.use('/areas', authMiddleware, areaRoutes);
 app.use('/produtos', authMiddleware, produtoRoutes);
-app.use('/contagens', authMiddleware, contagemRoutes)
-
+app.use('/contagens', authMiddleware, contagemRoutes);
 
 export { app };

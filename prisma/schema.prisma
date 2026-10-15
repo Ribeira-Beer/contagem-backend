@@ -13,8 +13,11 @@ model Usuario {
   senha      String      @db.VarChar(255)
   tipo       String      @db.VarChar(20)
   ativo      Boolean     @default(true)
+  idRevenda  Int?        @map("id_revenda")
+  revenda    Revenda?    @relation(fields: [idRevenda], references: [id], map: "fk_usuarios_revenda")
   conferente Conferente?
 
+  @@index([idRevenda])
   @@map("usuarios")
 }
 
@@ -30,6 +33,7 @@ model Revenda {
   logradouro  String         @db.VarChar(150)
   numero      Int
   ativo       Boolean        @default(true)
+  usuarios    Usuario[]
   areas       Area[]
   conferentes Conferente[]
   contagens   Contagem[]
