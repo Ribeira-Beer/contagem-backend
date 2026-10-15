@@ -15,6 +15,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/ping', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({
+      status: 'ok',
+      db: 'connected',
+      timestamp: new Date().toISOString(),
+    });
+  } catch {
+    res.status(200).json({
+      status: 'ok',
+      db: 'warming_up',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 const authController = new AuthController();
 app.post('/login', authController.login.bind(authController));
 
