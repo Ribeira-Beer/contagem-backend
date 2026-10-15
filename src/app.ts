@@ -8,7 +8,7 @@ import { contagemRoutes } from './routes/contagem.routes';
 import { AuthController } from './controllers/auth.controller';
 import { authMiddleware } from './middlewares/auth.middleware';
 import { usuarioRoutes } from './routes/usuario.routes';
-import prisma from './config/prisma';
+import { prisma } from './config/prisma'; // CORRIGIDO AQUI: Adicionado as chaves { }
 
 const app = express();
 
